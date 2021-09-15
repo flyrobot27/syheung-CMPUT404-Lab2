@@ -2,8 +2,7 @@ import socket, sys
 
 HOST = '127.0.0.1'
 PORT = 8001
-PAYLOAD = f'GET / HTTP/1.0\r\nHost: {HOST}\r\n\r\n'
-BUFFER_SIZE = 4096
+BUFFER_SIZE = 1024
 
 def get_remote_ip(host):
     print(f'Getting IP for {host}')
@@ -54,4 +53,7 @@ def main():
             connStart.close()
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        exit()
