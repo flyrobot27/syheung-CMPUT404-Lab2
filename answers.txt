@@ -1,0 +1,4 @@
+Q1: socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+Q2: a client socket ususally need to get the host (in this lab using gethostbyname()) while a server socket generally has to bind itself to a port, starts listening (using listen()) and accept a connection
+Q3: by adding socket option SO_REUSEADDR
+Q4: 
