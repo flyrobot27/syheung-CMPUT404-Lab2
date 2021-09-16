@@ -1,4 +1,6 @@
 import socket, sys
+from multiprocessing import Process
+import time
 
 HOST = '127.0.0.1'
 PORT = 8001
@@ -14,6 +16,18 @@ def get_remote_ip(host):
 
     print (f'Ip address of {host} is {remote_ip}')
     return remote_ip
+
+def handle_request(connStart, proxyEnd):
+    sendData = connStart.recv(BUFFER_SIZE)
+    print("Sending data to google")
+    proxyEnd.sendall(sendData)
+
+    proxyEnd.shutdown(socket.SHUT_WR) #shutdown the proxy
+
+    receivedData = proxyEnd.recv(BUFFER_SIZE)
+
+    print("Sending data back to client")
+    connStart.send(receivedData)
 
 def main():
     remoteHost = 'www.google.com'
@@ -38,17 +52,10 @@ def main():
                 # connect to google
                 proxyEnd.connect((remoteIp, remotePort))
 
-                # getting data from proxyStart's connection
-                sendData = connStart.recv(BUFFER_SIZE)
-                print("Sending data to google")
-                proxyEnd.sendall(sendData)
+                # Start multiprocessing
+                Process(target=handle_request, args=(connStart, proxyEnd)).start()
+                time.sleep(1) #sometimes resolves the error of connection reset by peer
 
-                proxyEnd.shutdown(socket.SHUT_WR) #shutdown the proxy
-
-                receivedData = proxyEnd.recv(BUFFER_SIZE)
-
-                print("Sending data back to client")
-                connStart.send(receivedData)
 
             connStart.close()
 
